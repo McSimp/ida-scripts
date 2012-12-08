@@ -1,0 +1,8 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# These files are text and should be normalized (Convert crlf => lf)
+*.idc text
+
+# Does this work?
+*.idc diff=c
