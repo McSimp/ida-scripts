@@ -4,6 +4,22 @@
 
 #include <idc.idc>
 
+static CleanupName(name)
+{
+	auto i;
+	auto current;
+	for(i = 0; i < strlen(name); i++)
+	{
+		current = name[i];
+		if(current == ":" || current == "~")
+		{
+			name[i] = "_";
+		}
+	}
+
+	return name;
+}
+
 static main()
 {
 	auto pAddress, iIndex;
@@ -43,7 +59,7 @@ static main()
 	// Create the struct to import vtable names into
 	structID = AddStruc(-1, structName);
 	
-	auto szFuncName, szFullName;
+	auto szFuncName, szFullName, szCleanName;
 
 	// For linux, skip the first entry
 	if (Dword(pAddress) == 0)
@@ -78,11 +94,13 @@ static main()
 			break;
 		}
 
-		while (AddStrucMember(structID, szFullName, iIndex * 4, 0x20000400, -1, 4) == STRUC_ERROR_MEMBER_NAME)
+		szCleanName = CleanupName(szFullName);
+
+		while (AddStrucMember(structID, szCleanName, iIndex * 4, 0x20000400, -1, 4) == STRUC_ERROR_MEMBER_NAME)
 		{
-			szFullName = szFullName + "_";
+			szCleanName = szCleanName + "_";
 		};
-		
+
 		pAddress = pAddress + 4;
 		iIndex++;
 	};
